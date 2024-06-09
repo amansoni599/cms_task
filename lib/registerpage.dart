@@ -27,7 +27,9 @@ class _RegisterPageState extends State<RegisterPage> {
     {"type": "PasswordField", "name": "password", "label": "Password", "validators": "required"},
     {"type": "TextField", "name": "firstName", "label": "First Name"},
     {"type": "TextField", "name": "lastName", "label": "Last Name"},
-    {"type": "Dropdown", "name": "gender", "label": "Gender", "options": ["Male", "Female", "Other"],"validators": "required"}
+    {"type": "DatePicker", "name": "date of birth", "label": "Date of Birth"},
+    {"type": "Dropdown", "name": "martial status", "label": "Martial Status", "options": ["Single", "Married"], "validators": "required"},
+    {"type": "GroupRadioButton", "name": "gender", "label": "Gender", "options": ["Male", "Female", "Other"],"validators": "required"}
   ]
   ''';
 
@@ -47,14 +49,11 @@ class _RegisterPageState extends State<RegisterPage> {
           decoration: InputDecoration(labelText: field['label']),
           validator: (value) {
             if (field['validators'] == "required") {
-              if (value == null) {
+              if (value == null || value.isEmpty) {
                 return "required field";
-              } else {
-                return null;
               }
-            } else {
-              return null;
             }
+            return null;
           },
         );
       case 'PasswordField':
@@ -64,14 +63,11 @@ class _RegisterPageState extends State<RegisterPage> {
           obscureText: true,
           validator: (value) {
             if (field['validators'] == "required") {
-              if (value == null) {
+              if (value == null || value.isEmpty) {
                 return "required field";
-              } else {
-                return null;
               }
-            } else {
-              return null;
             }
+            return null;
           },
         );
       case 'DatePicker':
@@ -84,12 +80,9 @@ class _RegisterPageState extends State<RegisterPage> {
             if (field['validators'] == "required") {
               if (value == null) {
                 return "required field";
-              } else {
-                return null;
               }
-            } else {
-              return null;
             }
+            return null;
           },
         );
       case 'Dropdown':
@@ -101,12 +94,63 @@ class _RegisterPageState extends State<RegisterPage> {
             if (field['validators'] == "required") {
               if (value == null) {
                 return "required field";
-              } else {
-                return null;
               }
-            } else {
-              return null;
             }
+            return null;
+          },
+        );
+      case 'Checkbox':
+        return FormBuilderCheckbox(
+          name: field['name'],
+          initialValue: field['initialValue'] ?? false,
+          title: Text(field['label']),
+          validator: (value) {
+            if (field['validators'] == "required") {
+              if (value == false) {
+                return "required field";
+              }
+            }
+            return null;
+          },
+        );
+      case 'GroupCheckbox':
+        return FormBuilderCheckboxGroup(
+          name: field['name'],
+          options: (field['options'] as List)
+              .map((option) => FormBuilderFieldOption(
+                    value: option,
+                    child: Text(option),
+                  ))
+              .toList(),
+          decoration: InputDecoration(labelText: field['label']),
+          validator: (value) {
+            if (field['validators'] == "required") {
+              if (value == null || (value).isEmpty) {
+                return "required field";
+              }
+            }
+            return null;
+          },
+        );
+      case 'GroupRadioButton':
+        return FormBuilderRadioGroup(
+          name: field['name'],
+          options: (field['options'] as List)
+              .map((option) => FormBuilderFieldOption(
+                    value: option,
+                    child: Text(option),
+                  ))
+              .toList(),
+          decoration: InputDecoration(
+            labelText: field['label'],
+          ),
+          validator: (value) {
+            if (field['validators'] == "required") {
+              if (value == null) {
+                return "required field";
+              }
+            }
+            return null;
           },
         );
       default:
@@ -121,6 +165,16 @@ class _RegisterPageState extends State<RegisterPage> {
         child: Text(item.toString()), // Customize this as per your requirement
       );
     }).toList();
+  }
+
+  Map<String, String> convertToStringMap(Map<String, dynamic> originalMap) {
+    Map<String, String> stringMap = {};
+
+    originalMap.forEach((key, value) {
+      stringMap[key] = value.toString();
+    });
+
+    return stringMap;
   }
 
   @override
@@ -188,13 +242,13 @@ class _RegisterPageState extends State<RegisterPage> {
       Map<String, dynamic> jsonData) async {
     // Reference to the Firebase Realtime Database
     DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
-    print(jsonData["email"]);
+    var jsondata = convertToStringMap(jsonData);
     try {
       // Push the JSON data to the database
       await databaseReference
           .child("UserModel")
-          .child(jsonData["email"].toString().split("@")[0])
-          .set(jsonData);
+          .child(jsondata["email"].toString().split("@")[0])
+          .set(jsondata);
       print('Data stored successfully!');
     } catch (e) {
       print('Error storing data: $e');

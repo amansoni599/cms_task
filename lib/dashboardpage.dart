@@ -1,3 +1,4 @@
+import 'package:cms_task/extension_String.dart';
 import 'package:cms_task/userinfotitle.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,7 @@ class _DashboardPageState extends State<DashboardPage> {
   final DatabaseReference _databaseReference =
       FirebaseDatabase.instance.reference();
   bool isLoading = true;
-  var map;
+  List<Map<String, String>> map = [];
   @override
   void initState() {
     _listenForData(widget.email);
@@ -28,13 +29,26 @@ class _DashboardPageState extends State<DashboardPage> {
         .onValue
         .listen((event) {
       if (event.snapshot.value != null) {
-        map = event.snapshot.value;
+        map = convertMapToList(event.snapshot.value);
+        print(map.runtimeType);
 
         setState(() {
           isLoading = false;
         });
       }
     });
+  }
+
+  List<Map<String, String>> convertMapToList(inputMap) {
+    List<Map<String, String>> resultList = [];
+
+    inputMap.forEach((key, value) {
+      if (key != null && value != null) {
+        resultList.add({key.toString(): value.toString()});
+      }
+    });
+
+    return resultList;
   }
 
   @override
@@ -51,13 +65,20 @@ class _DashboardPageState extends State<DashboardPage> {
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  UserInfoTile(label: 'Email', value: map["email"] ?? ""),
-                  UserInfoTile(
-                      label: 'First Name', value: map["firstName"] ?? ""),
-                  UserInfoTile(
-                      label: 'Last Name', value: map["lastName"] ?? ""),
-                  UserInfoTile(label: 'Username', value: map["username"] ?? ""),
-                  UserInfoTile(label: 'Gender', value: map["gender"] ?? ""),
+                  for (int i = 0; i < map.length; i++)
+                    UserInfoTile(
+                      label: map[i]
+                          .keys
+                          .toString()
+                          .replaceAll("(", "")
+                          .replaceAll(")", "")
+                          .capitalizeFirstLetter(),
+                      value: map[i]
+                          .values
+                          .toString()
+                          .replaceAll("(", "")
+                          .replaceAll(")", ""),
+                    ),
                 ],
               ),
       ),
