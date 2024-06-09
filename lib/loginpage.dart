@@ -16,7 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  final _formKey = GlobalKey<FormBuilderState>();
+  final key1 = GlobalKey<FormState>();
 
   bool isEnableForget = false;
 
@@ -91,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
-          key: _formKey,
+          key: key1,
           autovalidateMode: AutovalidateMode.always,
           child: Column(
             children: [
@@ -129,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         sendPasswordResetEmail(_emailController.text);
                         CustomToast.show(context, "Kindly check your email");
                       } else {
-                        if (_formKey.currentState?.saveAndValidate() ?? false) {
+                        if (key1.currentState?.validate() ?? false) {
                           bool isUser = await _login(
                               _emailController.text, _passwordController.text);
                           if (isUser) {

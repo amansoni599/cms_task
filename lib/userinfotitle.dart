@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class UserInfoTile extends StatelessWidget {
   final String label;
@@ -13,17 +14,23 @@ class UserInfoTile extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.4 - 10,
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
             ),
           ),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 16,
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.6 - 25,
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 16,
+              ),
             ),
           ),
         ],
