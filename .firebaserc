@@ -1,0 +1,9 @@
+{
+  "projects": {
+    "default": "cmstask",
+    "json": "cmstask"
+  },
+  "targets": {},
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
+}

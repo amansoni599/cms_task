@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "1044697442933",
+    "firebase_url": "https://cmstask-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "cmstask",
+    "storage_bucket": "cmstask.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1044697442933:android:e6c376a9c29e02d045663c",
+        "android_client_info": {
+          "package_name": "com.example.cms_task"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSE1CMpLX3P7mWpyngud1hWpCZ3KyHl1w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
