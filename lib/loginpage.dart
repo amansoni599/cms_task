@@ -3,6 +3,7 @@ import 'package:cms_task/dashboardpage.dart';
 import 'package:cms_task/registerpage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,6 +15,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  final _formKey = GlobalKey<FormBuilderState>();
 
   bool isEnableForget = false;
 
@@ -69,6 +72,16 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  bool validateEmail(String email) {
+    // Regular expression for email validation
+    final RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    return emailRegex.hasMatch(email);
+  }
+
+  bool validatePassword(String password) {
+    return password.length >= 6;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,65 +90,87 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-            ),
-            if (!isEnableForget)
-              TextField(
-                controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Password'),
-                obscureText: true,
+        child: Form(
+          key: _formKey,
+          autovalidateMode: AutovalidateMode.always,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _emailController,
+                decoration: const InputDecoration(labelText: 'Email'),
+                validator: (value) {
+                  print(value);
+                  if (!validateEmail(value ?? "")) {
+                    return "Kindly check your email";
+                  } else {
+                    return null;
+                  }
+                },
               ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton(
-                  onPressed: () async {
-                    if (isEnableForget) {
-                      sendPasswordResetEmail(_emailController.text);
-                      CustomToast.show(context, "Kindly check your email");
-                    } else {
-                      bool isUser = await _login(
-                          _emailController.text, _passwordController.text);
-                      if (isUser) {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => DashboardPage(
-                                      email: _emailController.text,
-                                    )));
-                      }
+              if (!isEnableForget)
+                TextFormField(
+                  controller: _passwordController,
+                  decoration: const InputDecoration(labelText: 'Password'),
+                  obscureText: true,
+                  validator: (value) {
+                    if (!validatePassword(value ?? "")) {
+                      return "password length 6";
                     }
+                    return null;
                   },
-                  child: Text(isEnableForget ? 'Send Reset Email' : 'Login'),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      isEnableForget = !isEnableForget;
-                    });
-                  },
-                  child: Text(
-                      isEnableForget ? 'Back to Login' : 'Forgot Password'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    // Navigate to your register page here
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const RegisterPage()),
-                    );
-                  },
-                  child: const Text('Register'),
-                ),
-              ],
-            ),
-          ],
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (isEnableForget) {
+                        sendPasswordResetEmail(_emailController.text);
+                        CustomToast.show(context, "Kindly check your email");
+                      } else {
+                        if (_formKey.currentState?.saveAndValidate() ?? false) {
+                          bool isUser = await _login(
+                              _emailController.text, _passwordController.text);
+                          if (isUser) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => DashboardPage(
+                                          email: _emailController.text,
+                                        )));
+                          }
+                        }
+                        setState(() {});
+                      }
+                    },
+                    child: Text(isEnableForget ? 'Send Reset Email' : 'Login'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        isEnableForget = !isEnableForget;
+                      });
+                    },
+                    child: Text(
+                        isEnableForget ? 'Back to Login' : 'Forgot Password'),
+                  ),
+                  if (isEnableForget == false)
+                    ElevatedButton(
+                      onPressed: () {
+                        // Navigate to your register page here
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const RegisterPage()),
+                        );
+                      },
+                      child: const Text('Register'),
+                    ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

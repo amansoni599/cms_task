@@ -221,10 +221,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => DashboardPage(
-                                    email:
-                                        _formKey.currentState?.value["email"],
-                                  )));
+                              builder: (context) => const LoginScreen()));
                     },
                     child: const Text('Login'),
                   ),
